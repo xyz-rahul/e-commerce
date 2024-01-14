@@ -1,6 +1,8 @@
-import { courses } from '@/lib/placeholder-data'
+import { getAllProducts } from '@/actions/product'
 import CourseCard from '@/components/CourseCard'
-export default function Home() {
+
+export default async function Home() {
+    const courses = await getAllProducts()
     return (
         <div className="mini-w-screen flex  min-h-screen flex-row flex-wrap justify-center">
             <CourseCard />
