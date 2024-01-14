@@ -5,7 +5,6 @@ export default async function Home() {
     const courses = await getAllProducts()
     return (
         <div className="mini-w-screen flex  min-h-screen flex-row flex-wrap justify-center">
-            <CourseCard />
             {courses.map((course) => (
                 <CourseCard
                     key={course.id}
