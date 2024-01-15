@@ -1,12 +1,22 @@
+'use server'
 import { sql } from '@vercel/postgres'
 
-export async function getAllItems() {
+export async function getAllItems(page = 1, size = 8) {
     const { rows } =
         await sql`SELECT course_id, title, instructor, price, duration, description
                     FROM courses
-                    ORDER BY course_id`
-
-    return rows
+                    ORDER BY course_id
+                    LIMIT ${size}
+                   OFFSET ${(parseInt(page) - 1) * parseInt(size)}
+                    `
+    const output = await sql`select count(*) from courses`
+    const totalItems = output.rows[0].count
+    const result = {
+        data: rows,
+        totalItems: totalItems,
+        success: true,
+    }
+    return result
 }
 
 export async function createItem(formData) {
