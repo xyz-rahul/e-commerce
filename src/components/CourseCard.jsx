@@ -21,7 +21,9 @@ export default function CourseCard({ id, title, description, price }) {
                 <p className="text-2xl font-bold text-black/80 group-hover:text-white">
                     {title}
                 </p>
-                <p className="text-sm text-gray-400">{description}</p>
+                <p className="h-12 overflow-hidden text-sm text-gray-400">
+                    {description}
+                </p>
                 <p
                     style={{
                         WebkitTextStroke: '1px gray',

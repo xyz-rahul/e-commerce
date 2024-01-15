@@ -1,9 +1,9 @@
-import { getProduct } from '@/actions/product'
+import { getItem } from '@/actions/items'
 import React from 'react'
 
 export default async function page({ params }) {
     const id = params.id
-    const course = await getProduct(id)
+    const course = await getItem(id)
     return (
         <div className="m-[50px] flex min-h-screen flex-col items-center rounded-md p-6 shadow-2xl">
             <div className="container mx-4 mt-8 text-5xl font-extrabold ">
