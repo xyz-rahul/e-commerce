@@ -3,7 +3,7 @@ import { auth, SignInButton, UserButton } from '@clerk/nextjs'
 export default function Navbar() {
     const { userId } = auth()
     return (
-        <header className="flex w-full flex-wrap bg-white py-4 text-sm sm:flex-nowrap sm:justify-start dark:bg-gray-800">
+        <header className="flex w-full flex-wrap bg-gray-200 py-4 text-sm sm:flex-nowrap sm:justify-start dark:bg-gray-800">
             <nav
                 className="mx-auto flex w-full max-w-[85rem] basis-full flex-wrap items-center justify-between px-4"
                 aria-label="Global"
