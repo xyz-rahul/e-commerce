@@ -69,13 +69,13 @@ export default function Navbar() {
                 >
                     <div className="mt-5 flex flex-col gap-5 sm:mt-0 sm:flex-row sm:items-center sm:ps-5">
                         <a
-                            className="font-medium text-gray-600 hover:text-blue-400 dark:text-gray-400 dark:hover:text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                            className="text-lg font-medium text-gray-600 hover:text-blue-400 dark:text-white dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                             href="/"
                         >
                             Home
                         </a>
                         <a
-                            className="font-medium text-gray-600 hover:text-blue-400 dark:text-gray-400 dark:hover:text-blue-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                            className="text-lg font-medium text-gray-600 hover:text-blue-400 dark:text-white dark:hover:text-gray-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                             href="/about"
                         >
                             About

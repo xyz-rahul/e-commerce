@@ -8,7 +8,10 @@ export async function getAllItems(page = 1, size = 8) {
         const output = await sql`select count(*) from courses`
         const totalItems = output.rows[0].count
         if ((page - 1) * size >= totalItems) {
-            throw new Error('No more items')
+            return {
+                success: false,
+                message: 'no more items left',
+            }
         }
         const { rows } =
             await sql`SELECT course_id, title, instructor, price, duration, description
@@ -40,12 +43,26 @@ export async function createItem(formData) {
 }
 
 export async function getItem(id) {
-    const { rows } =
-        await sql`SELECT title, instructor, price, duration, description
+    try {
+        const { rows } =
+            await sql`SELECT title, instructor, price, duration, description
                             FROM courses
                           WHERE course_id = ${id}`
-    const row = rows[0]
-    return row
+        const row = rows[0]
+        if (!row) {
+            return {
+                success: false,
+                message: 'item did not exists',
+            }
+        }
+        return {
+            success: true,
+            data: row,
+        }
+    } catch (error) {
+        console.error('Error in getAllItems:')
+        throw new Error('Internal server error')
+    }
 }
 
 export async function updateItem(id, formData) {
