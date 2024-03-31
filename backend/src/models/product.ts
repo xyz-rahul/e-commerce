@@ -51,11 +51,11 @@ async function createProduct(product: Product): Promise<number> {
         product
     const db = await getConnection()
     try {
-        const [result] = await db.execute<ResultSetHeader[]>(
+        const [result] = await db.execute<ResultSetHeader>(
             'INSERT INTO products (name, description, price, stock_quantity, category, user_id) VALUES (?, ?, ?, ?, ?, ?)',
             [name, description, price, stock_quantity, category, user_id]
         )
-        return result[0].insertId as number
+        return result.insertId as number
     } catch (error) {
         throw new Error(`Error creating product: ${error}`)
     }

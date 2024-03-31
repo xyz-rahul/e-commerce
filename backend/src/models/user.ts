@@ -25,11 +25,11 @@ async function createUser(user: User): Promise<number> {
     const { name, email, address, phone, password, role } = user
     const db = await getConnection()
     try {
-        const [result] = await db.execute<ResultSetHeader[]>(
+        const [result] = await db.execute<ResultSetHeader>(
             'INSERT INTO users (name, email, address, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
             [name, email, address, phone, password, role]
         )
-        return result[0].insertId as number
+        return result.insertId as number
     } catch (error) {
         throw new Error(`Error creating user: ${(error as Error).message}`)
     }
