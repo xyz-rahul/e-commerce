@@ -1,6 +1,10 @@
 import { FaUserCircle } from 'react-icons/fa'
-
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+import SignOut from './SignOutButton'
+import SignInButton from './SignInButton'
 export default function Navbar() {
+    const auth = useAuthUser()
+
     return (
         <div>
             <header className="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full border-b text-sm py-2.5 md:py-4 bg-slate-900 dark:border-gray-700">
@@ -38,11 +42,16 @@ export default function Navbar() {
                         </div>
                         {/* End Form */}
                         <div className="flex items-center relative z-10 ms-auto">
-                            <div className="lg:ms-1 flex">
-                                <button className="inline-flex flex-shrink-0 justify-center items-center text-xl  font-bold rounded-full  hover:bg-gray-200 text-gray-200 dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
-                                    <FaUserCircle />
-                                </button>
-                            </div>
+                            {auth ? (
+                                <div className="flex gap-2">
+                                    <button className="inline-flex flex-shrink-0 justify-center items-center text-xl  font-bold rounded-full  hover:bg-gray-200 text-gray-200 dark:hover:bg-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">
+                                        {/* <FaUserCircle /> */}
+                                    </button>
+                                    <SignOut />
+                                </div>
+                            ) : (
+                                <SignInButton />
+                            )}
                         </div>
                     </div>
                 </nav>

@@ -6,6 +6,17 @@ import RootLayout from './components/RootLayout'
 import Home from './pages/Home'
 import Sell from './pages/Sell'
 import Product from './pages/Product'
+import LoginPage from './pages/Login'
+
+import createStore from 'react-auth-kit/createStore'
+const store = createStore({
+    authName: '_auth',
+    authType: 'cookie',
+    cookieDomain: window.location.hostname,
+    cookieSecure: window.location.protocol === 'https:',
+})
+import AuthProvider from 'react-auth-kit'
+import SignUp from './pages/SignUp'
 
 const router = createBrowserRouter([
     {
@@ -24,6 +35,14 @@ const router = createBrowserRouter([
                 path: '/product/:id',
                 element: <Product />,
             },
+            {
+                path: '/login',
+                element: <LoginPage />,
+            },
+            {
+                path: '/signup',
+                element: <SignUp />,
+            },
         ],
     },
     {
@@ -33,6 +52,8 @@ const router = createBrowserRouter([
 ])
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <AuthProvider store={store}>
+            <RouterProvider router={router} />
+        </AuthProvider>
     </React.StrictMode>
 )

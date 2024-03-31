@@ -11,6 +11,8 @@ interface Product {
 }
 
 export default function Sell() {
+    const [submitPending, setSubmitPending] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [product, setProduct] = useState<Product>({
         name: '',
         description: '',
@@ -45,6 +47,7 @@ export default function Sell() {
             formData.append('product_image', product.image)
         }
         try {
+            setSubmitPending(true)
             const response = await axios.post('/api/product', formData)
 
             if (response.status === 201 || response.status === 201200) {
@@ -53,8 +56,12 @@ export default function Sell() {
             } else {
                 console.error('Failed to upload product')
             }
-        } catch (error) {
+            setSubmitPending(false)
+        } catch (error: any) {
+            setError('Error uploading product' + error.message)
             console.error('Error uploading product:', error)
+        } finally {
+            setSubmitPending(false)
         }
     }
 
