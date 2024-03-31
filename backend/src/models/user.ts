@@ -2,17 +2,17 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import getConnection from '../config/db'
 
 interface User {
-    user_id?: number
+    user_id?: string
     name: string
     email: string
     address?: string
     phone?: string
     password: string
-    role: 'user' | 'admin'
+    role?: 'user' | 'admin'
 }
 
 interface UserRow extends RowDataPacket {
-    user_id: number
+    user_id: string
     name: string
     email: string
     address: string | null
@@ -21,15 +21,24 @@ interface UserRow extends RowDataPacket {
     role: 'user' | 'admin'
 }
 
-async function createUser(user: User): Promise<number> {
+async function createUser(user: User): Promise<string> {
     const { name, email, address, phone, password, role } = user
     const db = await getConnection()
     try {
+        const params = [
+            name,
+            email,
+            address || null,
+            phone || null,
+            password,
+            role || null,
+        ]
+
         const [result] = await db.execute<ResultSetHeader>(
             'INSERT INTO users (name, email, address, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, email, address, phone, password, role]
+            params
         )
-        return result.insertId as number
+        return result.insertId.toString() as string
     } catch (error) {
         throw new Error(`Error creating user: ${(error as Error).message}`)
     }
