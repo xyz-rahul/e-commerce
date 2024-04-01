@@ -16,6 +16,7 @@ import LoginPage from './pages/Login'
 import SignUp from './pages/SignUp'
 import { AuthProvider } from './context/AuthContext'
 import RequireAuth from './context/RequireAuth'
+import PageNotFound from './pages/PageNotFound'
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<RootLayout />}>
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
             <Route element={<RequireAuth />}>
                 <Route path="/sell" element={<Sell />} />
             </Route>
+            <Route path="*" element={<PageNotFound />} />
         </Route>
     )
 )
