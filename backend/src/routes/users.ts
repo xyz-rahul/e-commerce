@@ -2,14 +2,17 @@ import express, { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { User, createUser, getUserByEmail } from '../models/user'
-import { generateUserToken } from '../services/jwt'
+import {
+    generateUserRefreshToken,
+    generateUserToken,
+    verifyUserRefreshToken,
+} from '../services/jwt'
 
 const router = express.Router()
 const secretKey = 'secretKey'
 router.post('/signup', async (req: Request, res: Response) => {
     try {
         const { name, email, password } = req.body
-
         const existingUser = await getUserByEmail(email)
         if (existingUser) {
             return res
@@ -25,8 +28,12 @@ router.post('/signup', async (req: Request, res: Response) => {
             password: hashedPassword,
         })
         const token = generateUserToken({ userId, email })
+        const refreshToken = generateUserRefreshToken({ userId, email })
 
-        res.cookie('jwt', token, { httpOnly: true })
+        res.cookie('__refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: true,
+        })
 
         res.status(201).json({ userId, token })
     } catch (error: any) {
@@ -53,14 +60,46 @@ router.post('/login', async (req: Request, res: Response) => {
                 .json({ message: 'Invalid email or password' })
         }
 
+        const userId = user.user_id as string
         const token = generateUserToken({
-            userId: user.user_id!,
-            email: user.email,
+            userId,
+            email,
         })
 
-        res.cookie('jwt', token, { httpOnly: true })
+        const refreshToken = generateUserRefreshToken({ userId, email })
 
-        res.status(200).json({ token })
+        res.cookie('__refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: true,
+        })
+
+        res.status(200).json({ userId, token })
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.get('/logout', async (req: Request, res: Response) => {
+    try {
+        res.clearCookie('__refresh_token')
+        res.status(200).send()
+    } catch (error: any) {
+        res.status(500).json({ message: error.message })
+    }
+})
+router.get('/auth', async (req: Request, res: Response) => {
+    try {
+        const refreshToken = req.cookies.__refresh_token
+        if (!refreshToken) {
+            return res.status(401).json({ message: 'Not Authorized' })
+        }
+        const decoded = verifyUserRefreshToken(refreshToken)
+        const { userId, email } = decoded
+        const token = generateUserToken({
+            userId,
+            email,
+        })
+        res.status(200).json({ userId, token })
     } catch (error: any) {
         res.status(500).json({ message: error.message })
     }

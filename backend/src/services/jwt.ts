@@ -16,3 +16,18 @@ export function verifyUserToken(token: string) {
     }
     return decoded
 }
+
+export function generateUserRefreshToken(payload: {
+    userId: string
+    email: string
+}): string {
+    return jwt.sign(payload, secretKey, { expiresIn: '1d' })
+}
+
+export function verifyUserRefreshToken(token: string) {
+    const decoded = jwt.verify(token, secretKey) as {
+        userId: string
+        email: string
+    }
+    return decoded
+}

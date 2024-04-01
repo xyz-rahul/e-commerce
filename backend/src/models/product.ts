@@ -8,6 +8,7 @@ interface Product {
     price: number
     stock_quantity: number
     category: string
+    thumbnail_url: string
     user_id: number
 }
 
@@ -18,6 +19,7 @@ interface ProductRow extends RowDataPacket {
     price: number
     stock_quantity: number
     category: string
+    thumbnail_url: string
     user_id: number
 }
 
@@ -47,13 +49,29 @@ async function getProductById(productId: number): Promise<Product | null> {
 }
 
 async function createProduct(product: Product): Promise<number> {
-    const { name, description, price, stock_quantity, category, user_id } =
-        product
+    const {
+        name,
+        description,
+        price,
+        stock_quantity,
+        category,
+        thumbnail_url,
+        user_id,
+    } = product
     const db = await getConnection()
     try {
+        const params = [
+            name,
+            description || null,
+            price || null,
+            stock_quantity || null,
+            category || null,
+            thumbnail_url || null,
+            user_id,
+        ]
         const [result] = await db.execute<ResultSetHeader>(
-            'INSERT INTO products (name, description, price, stock_quantity, category, user_id) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, description, price, stock_quantity, category, user_id]
+            'INSERT INTO products (name, description, price, stock_quantity, category, thumbnail_url, user_id) VALUES (?, ?, ?, ?, ?,?, ?)',
+            params
         )
         return result.insertId as number
     } catch (error) {

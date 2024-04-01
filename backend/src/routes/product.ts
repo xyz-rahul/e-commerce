@@ -7,8 +7,12 @@ import {
     updateProduct,
     deleteProduct,
 } from '../models/product'
+import multer from 'multer'
+import { FileSizeError, uploadImageToFirebase } from '../services/images'
 
 const router = express.Router()
+const storage = multer.memoryStorage() // Store files in memory
+const upload = multer({ storage })
 
 router.get('/', async (req: Request, res: Response) => {
     try {
@@ -19,7 +23,6 @@ router.get('/', async (req: Request, res: Response) => {
     }
 })
 
-// GET product by ID
 router.get('/:id', async (req: Request, res: Response) => {
     const productId: number = parseInt(req.params.id)
     try {
@@ -34,18 +37,39 @@ router.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-// Create a new product
-router.post('/', async (req: Request, res: Response) => {
-    const newProduct: Product = req.body as Product
-    try {
-        const productId: number = await createProduct(newProduct)
-        res.status(201).json({ productId })
-    } catch (error) {
-        res.status(500).json({ message: (error as Error).message })
-    }
-})
+router.post(
+    '/',
+    upload.single('product_image'),
+    async (req: Request, res: Response) => {
+        const newProduct: Product = req.body as Product
 
-// Update an existing product
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image uploaded' })
+        }
+        const file = req.file as Express.Multer.File
+        const url = await uploadImageToFirebase(file)
+        try {
+            const product = {
+                ...newProduct,
+                thumbnail_url: url,
+                user_id: 1,
+            } as Product
+            const productId: number = await createProduct(product)
+            res.status(201).json({ productId })
+        } catch (error: any | FileSizeError) {
+            console.log(error)
+            if (error instanceof FileSizeError) {
+                return res.status(400).json({ message: error.message })
+            } else {
+                console.log(error)
+                return res
+                    .status(500)
+                    .json({ message: 'Unexpected error occurred' })
+            }
+        }
+    }
+)
+
 router.put('/:id', async (req: Request, res: Response) => {
     const productId: number = parseInt(req.params.id)
     const updatedProduct: Product = req.body as Product
@@ -61,7 +85,6 @@ router.put('/:id', async (req: Request, res: Response) => {
     }
 })
 
-// Delete a product
 router.delete('/:id', async (req: Request, res: Response) => {
     const productId: number = parseInt(req.params.id)
     try {
