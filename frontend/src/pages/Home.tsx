@@ -39,7 +39,7 @@ export default function Home() {
 
     return (
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {products.map((product: any, index) => (
                     <div key={index} className="mx-auto">
                         <JobCard
@@ -53,7 +53,7 @@ export default function Home() {
                 ))}
             </div>
             <div className="flex justify-center p-2">
-                <div className="flex gap-2 font-mono">
+                <div className="flex gap-2">
                     {currentPage > 1 && (
                         <>
                             <button
