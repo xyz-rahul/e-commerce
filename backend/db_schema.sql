@@ -19,7 +19,7 @@ CREATE TABLE products (
     stock_quantity INT NOT NULL,
     category VARCHAR(255),
     user_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (user_id)
+    thumbnail_url TEXT;
 );
 
 
