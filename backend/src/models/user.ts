@@ -1,5 +1,5 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
-import getConnection from '../config/db'
+import pool from '../config/db'
 
 interface User {
     user_id?: string
@@ -23,7 +23,7 @@ interface UserRow extends RowDataPacket {
 
 async function createUser(user: User): Promise<string> {
     const { name, email, address, phone, password, role } = user
-    const db = await getConnection()
+    const db = await pool.getConnection()
     try {
         const params = [
             name,
@@ -41,11 +41,13 @@ async function createUser(user: User): Promise<string> {
         return result.insertId.toString() as string
     } catch (error) {
         throw new Error(`Error creating user: ${(error as Error).message}`)
+    } finally {
+        pool.releaseConnection(db)
     }
 }
 
 async function getUserByEmail(email: string): Promise<User | null> {
-    const db = await getConnection()
+    const db = await pool.getConnection()
     try {
         const [rows]: [UserRow[], unknown] = await db.execute(
             'SELECT * FROM users WHERE email = ?',
@@ -56,6 +58,8 @@ async function getUserByEmail(email: string): Promise<User | null> {
         throw new Error(
             `Error fetching user by email: ${(error as Error).message}`
         )
+    } finally {
+        pool.releaseConnection(db)
     }
 }
 

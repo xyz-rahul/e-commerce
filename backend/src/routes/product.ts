@@ -6,6 +6,7 @@ import {
     createProduct,
     updateProduct,
     deleteProduct,
+    getAllProductsCount,
 } from '../models/product'
 import multer from 'multer'
 import { FileSizeError, uploadImageToFirebase } from '../services/images'
@@ -20,7 +21,8 @@ router.get('/', async (req: Request, res: Response) => {
         const page = (query.page || '1') as string
         const size = (query.size || '8') as string
         const products: Product[] = await getAllProducts(page, size)
-        res.json(products)
+        const totalProducts = await getAllProductsCount()
+        res.json({ totalProducts, products })
     } catch (error) {
         res.status(500).json({ message: (error as Error).message })
     }
