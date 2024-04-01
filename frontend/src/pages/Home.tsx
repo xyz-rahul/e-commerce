@@ -15,14 +15,11 @@ export default function Home() {
                 console.error('Error fetching products:', error)
             })
     }, [])
-    useEffect(() => {
-        console.log(products)
-    }, [products])
     return (
         <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {products.map((product: any) => (
-                    <div className="mx-auto">
+                {products.map((product: any, index) => (
+                    <div key={index} className="mx-auto">
                         <JobCard
                             key={product.product_id}
                             id={product.product_id}

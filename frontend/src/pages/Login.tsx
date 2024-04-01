@@ -1,17 +1,23 @@
-import axios from 'axios'
-import { FormEvent, useState } from 'react'
-import useSignIn from 'react-auth-kit/hooks/useSignIn'
-import { useNavigate } from 'react-router-dom'
+import { FormEvent, useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function LoginPage() {
     const navigate = useNavigate()
-    const signIn = useSignIn()
+    const location = useLocation()
+    const from = location.state?.from
+
+    const { signInWithEmailAndPassword, user, isAuthenticated } = useAuth()
     const [submitPending, setSubmitPending] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [userResponse, setUserResponse] = useState<{
         email: string
         password: string
     }>({ email: '', password: '' })
+
+    useEffect(() => {
+        if (user) navigate(from, { replace: true })
+    }, [user])
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -22,34 +28,7 @@ export default function LoginPage() {
         try {
             setSubmitPending(true)
             const { email, password } = userResponse
-            const response = await axios.post('/api/user/login', {
-                email,
-                password,
-            })
-
-            const { userId, token } = response.data as {
-                userId: string
-                token: string
-            }
-            if (
-                signIn({
-                    auth: {
-                        token: token,
-                        type: 'Bearer',
-                    },
-                    userState: {
-                        name: 'React User',
-                        uid: userId,
-                    },
-                })
-            ) {
-                console.log('signedin')
-                navigate(-1)
-            } else {
-                console.log('not')
-                //Throw error
-            }
-
+            signInWithEmailAndPassword(email, password)
             setSubmitPending(false)
         } catch (error: any) {
             setError('Error uploading product' + error.message)
@@ -58,6 +37,7 @@ export default function LoginPage() {
             setSubmitPending(false)
         }
     }
+
     return (
         <>
             <div className="flex h-screen">
@@ -120,7 +100,7 @@ export default function LoginPage() {
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300"
+                                    className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800  focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300"
                                 >
                                     Login
                                 </button>

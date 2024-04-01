@@ -1,11 +1,13 @@
 import axios from 'axios'
-import { FormEvent, useState } from 'react'
-import useSignIn from 'react-auth-kit/hooks/useSignIn'
-import { useNavigate } from 'react-router-dom'
+import { FormEvent, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function SignUp() {
-    const signIn = useSignIn()
     const navigate = useNavigate()
+    const location = useLocation()
+    const from = location.state?.from
+    const { signUpWithNameAndEmailAndPassword, user } = useAuth()
 
     const [submitPending, setSubmitPending] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -15,37 +17,17 @@ export default function SignUp() {
         password: string
     }>({ name: '', email: '', password: '' })
 
+    useEffect(() => {
+        if (user) navigate(from, { replace: true })
+    }, [user])
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
             setSubmitPending(true)
             const { name, email, password } = userResponse
-            const response = await axios.post('/api/user/signup', {
-                name,
-                email,
-                password,
-            })
-            const { userId, token } = response.data as {
-                userId: string
-                token: string
-            }
-            if (
-                signIn({
-                    auth: {
-                        token: token,
-                        type: 'Bearer',
-                    },
-                    userState: {
-                        name: 'React User',
-                        uid: userId,
-                    },
-                })
-            ) {
-                navigate('/')
-            } else {
-                console.log('not')
-                //Throw error
-            }
+
+            signUpWithNameAndEmailAndPassword(name, email, password)
 
             setSubmitPending(false)
         } catch (error: any) {

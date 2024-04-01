@@ -1,18 +1,24 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+interface Product {
+    product_id?: number
+    name: string
+    description: string
+    price: number
+    stock_quantity: number
+    category: string
+    thumbnail_url: string
+    user_id: number
+}
 
 export default function Product() {
-    const [product, setProduct] = useState(null)
+    const [product, setProduct] = useState<Product | null>(null)
     const { id } = useParams()
     useEffect(() => {
         axios
             .get(`/api/product/${id}`)
             .then((res) => res.data)
-            .then((data) => {
-                console.log(data)
-                return data
-            })
             .then((data) => setProduct(data))
     }, [])
     return (
