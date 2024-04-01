@@ -23,14 +23,20 @@ interface ProductRow extends RowDataPacket {
     user_id: number
 }
 
-async function getAllProducts(): Promise<Product[]> {
+async function getAllProducts(page: string, size: string): Promise<Product[]> {
     const db = await getConnection()
+
+    //mysql only accepts string
+    const offset = ((parseInt(page) - 1) * parseInt(size)).toString()
+    const limit = parseInt(size).toString()
     try {
         const [rows]: [ProductRow[], unknown] = await db.execute(
-            'SELECT * FROM products'
+            'SELECT * FROM products LIMIT ? OFFSET ?',
+            [limit, offset]
         )
         return rows
     } catch (error) {
+        console.log(error)
         throw new Error(`Error fetching products: ${error}`)
     }
 }

@@ -16,7 +16,10 @@ const upload = multer({ storage })
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const products: Product[] = await getAllProducts()
+        const query = req.query
+        const page = (query.page || '1') as string
+        const size = (query.size || '8') as string
+        const products: Product[] = await getAllProducts(page, size)
         res.json(products)
     } catch (error) {
         res.status(500).json({ message: (error as Error).message })
